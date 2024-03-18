@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+	id			Int		@id @default(autoincrement())
+	email		String	@unique
+	password	String
+	name		String?
+	recipes		Recipe[]
+}
+
+model Recipe {
+  id              Int      @id @default(autoincrement())
+  url             String
+  label           String //título
+//  image           String // no usar de momento, url EXPIRA
+  ingredientLines String // intentar usar JSON.stringify(array) ya que sqlite no soporta String[]
+  ingredients     String // usar el mismo workaround
+  calories        Float
+  totalWeight     Float
+  totalTime       Int
+  userId          Int
+  user            User    @relation(fields: [userId], references: [id])
+}
+
