@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import express, { Request, Response, NextFunction } from "express";
 import { msgText, opType } from '../models/enums';
-import { hasAllInputData, respond } from '../utils/authUtils';
+import { findUser, hasAllInputData, respond } from '../utils/authUtils';
 import bcrypt from "bcryptjs";
 import { PrismaClient } from '@prisma/client';
 
@@ -12,47 +12,59 @@ const SALT_ROUNDS = 10;
 
 // POST auth/signup - crea nuevo usuario en DB
 router.post("/signup", async (req: Request, res: Response, next: NextFunction) => {
-	//console.log('reqbody:', req.body);
-	const { email, password, name } = req.body;
+	try {
+		//console.log('reqbody:', req.body);
+		const { email, password, name } = req.body;
+		
+		if (!hasAllInputData(opType.SIGNUP, email, password, name)) {
+			respond(res, 400, msgText.INCOMPLETE_DATA_SIGNUP);
+			return;
+		};
 	
-	if (!hasAllInputData(opType.SIGNUP, email, password, name)) {
-		respond(res, 400, msgText.INCOMPLETE_DATA_SIGNUP);
-		return;
-	};
-
-	// comprueba si el e-mail tiene formato válido
-	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-	if (!emailRegex.test(email)) {
-		respond(res, 400, msgText.INVALID_EMAIL_FORMAT);
-		return;
-	}
-
-	// comprueba si la contraseña cumple requisitos para ser fuerte
-	const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
-	if (!passwordRegex.test(password)) {
-		respond(res, 400, msgText.INVALID_PASSWORD_FORMAT);
-		return;
-	}
-
-	// comprueba si ya existe usuario con este e-mail
-
-	// crea hash del password
-	const salt = bcrypt.genSaltSync(SALT_ROUNDS);
-	const hashedPassword = bcrypt.hashSync(password, salt);
-
-	// crea usuario en DB con password hasheado
-	const createdUser = await db.user.create({
-		data: {
-			name: name,
-			email: email,
-			password: hashedPassword
+		// comprueba si el e-mail tiene formato válido
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+		if (!emailRegex.test(email)) {
+			respond(res, 400, msgText.INVALID_EMAIL_FORMAT);
+			return;
 		}
-	});
-	// si usuario ha sido creado correctamente, responde con un OK
-	// y unos datos del usuario en JSON (sin incluir la contraseña)
-	if (createdUser) {
-		const user = { email: createdUser?.email, name: createdUser?.name };
-		res.status(201).json({ user });
+	
+		// comprueba si la contraseña cumple requisitos para ser fuerte
+		const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
+		if (!passwordRegex.test(password)) {
+			respond(res, 400, msgText.INVALID_PASSWORD_FORMAT);
+			return;
+		}
+	
+		// comprueba si ya existe usuario con este e-mail
+		const foundUser = await findUser(email);
+		if (foundUser) {
+			respond(res, 409, msgText.ALREADY_EXISTS);
+			console.log('user already exists, RETURN');
+			return;
+		}
+	
+		// crea hash del password
+		const salt = bcrypt.genSaltSync(SALT_ROUNDS);
+		const hashedPassword = bcrypt.hashSync(password, salt);
+	
+		// crea usuario en DB con password hasheado
+		const createdUser = await db.user.create({
+			data: {
+				name: name,
+				email: email,
+				password: hashedPassword
+			}
+		});
+		// si usuario ha sido creado correctamente, responde con un OK
+		// y unos datos del usuario en JSON (sin incluir la contraseña)
+		if (createdUser) {
+			const user = { email: createdUser?.email, name: createdUser?.name };
+			res.status(201).json({ user });
+		}
+	} catch (err) {
+		console.error(err);
+		respond(res, 500, msgText.ERR_CHECK_SERVER_LOG);
+		return;
 	}
 });
 
