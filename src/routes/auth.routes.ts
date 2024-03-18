@@ -20,8 +20,21 @@ router.post("/signup", (req: Request, res: Response, next: NextFunction) => {
 	}
 
 	// comprueba si el e-mail tiene formato válido
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+	if (!emailRegex.test(email)) {
+	  res.status(400).json({ message: "El e-mail no tiene formato válido." });
+	  return;
+	}
 
 	// comprueba si la contraseña cumple requisitos para ser fuerte
+	const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
+	if (!passwordRegex.test(password)) {
+	  res.status(400).json({
+		message:
+		  "La contraseña debe tener al menos 6 carácteres e incluir al menos un dígito, una letra minúscula y una mayúscula."
+	  });
+	  return;
+	}
 
 	// comprueba si ya existe usuario con este e-mail
 
