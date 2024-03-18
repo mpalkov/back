@@ -68,4 +68,25 @@ router.post("/signup", async (req: Request, res: Response, next: NextFunction) =
 	}
 });
 
+// POST  /auth/login - Comprueba email y password y crea JWT
+router.post("/login", ((req: Request, res: Response, next: NextFunction) => {
+	const { email, password } = req.body;
+
+	// comprueba que tenemos email y password
+	if (!hasAllInputData(opType.LOGIN, email, password)) {
+		respond(res, 400, msgText.INCOMPLETE_DATA_LOGIN);
+		return;
+	};
+
+	// comprueba DB si usuario existe
+
+	// comprueba que la contraseña del usuario es correcta
+
+	// crea payload del JWT
+
+	// JWT y fírmalo
+
+	// envía el token en la respuesta
+
+}));
 export default router;
