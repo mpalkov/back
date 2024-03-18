@@ -10,4 +10,6 @@ export enum msgText {
 	INVALID_PASSWORD_FORMAT = "La contraseña debe tener al menos 6 carácteres e incluir al menos un dígito, una letra minúscula y una mayúscula.",
 	ERR_CHECK_SERVER_LOG = "Ha ocurrido un error, comprueba log del servidor.",
 	ALREADY_EXISTS = "Ya existe usuario con este e-mail.",
+	USER_NOT_FOUND = "No existe usuario con este e-mail.",
+	WRONG_PASS = "La contraseña no es correcta."
 }

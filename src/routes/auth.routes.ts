@@ -4,6 +4,7 @@ import { msgText, opType } from '../models/enums';
 import { findUser, hasAllInputData, respond } from '../utils/authUtils';
 import bcrypt from "bcryptjs";
 import { PrismaClient } from '@prisma/client';
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 const router = express.Router();
@@ -38,8 +39,8 @@ router.post("/signup", async (req: Request, res: Response, next: NextFunction) =
 		// comprueba si ya existe usuario con este e-mail
 		const foundUser = await findUser(email);
 		if (foundUser) {
-			respond(res, 409, msgText.ALREADY_EXISTS);
-			console.log('user already exists, RETURN');
+			respond(res, 400, msgText.ALREADY_EXISTS);
+			console.log(msgText.ALREADY_EXISTS, ' RETURN');
 			return;
 		}
 	
@@ -69,24 +70,50 @@ router.post("/signup", async (req: Request, res: Response, next: NextFunction) =
 });
 
 // POST  /auth/login - Comprueba email y password y crea JWT
-router.post("/login", ((req: Request, res: Response, next: NextFunction) => {
-	const { email, password } = req.body;
-
-	// comprueba que tenemos email y password
-	if (!hasAllInputData(opType.LOGIN, email, password)) {
-		respond(res, 400, msgText.INCOMPLETE_DATA_LOGIN);
+router.post("/login", async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const { email, password } = req.body;
+	
+		// comprueba que tenemos email y password
+		if (!hasAllInputData(opType.LOGIN, email, password)) {
+			respond(res, 400, msgText.INCOMPLETE_DATA_LOGIN);
+			return;
+		};
+	
+		// comprueba en DB si usuario existe
+		const foundUser = await findUser(email);
+		if (!foundUser) {
+			respond(res, 400, msgText.USER_NOT_FOUND);
+			console.log(msgText.USER_NOT_FOUND, ' RETURN');
+			return;
+		}
+	
+		// comprueba que la contraseña del usuario es correcta
+		if (!bcrypt.compareSync(password, foundUser.password)) {
+			respond(res, 401, msgText.WRONG_PASS);
+			console.log(msgText.WRONG_PASS, 'RETURN');
+			return;
+		}
+		// si la contraseña es correcta, se continua
+		const { id, name } = foundUser;
+		// Crea un objeto que servirá de payload del JWT
+		const payload = { id, email, name };
+	
+		// crea JWT y fírmalo
+		// console.log('TOKEN SECRET from .env', String(process.env.TOKEN_SECRET));
+		const authToken = jwt.sign(payload, String(process.env.TOKEN_SECRET) , {
+			algorithm: "HS256",
+			expiresIn: "2h",
+		});
+		console.log('authTOKEN ✅: \n', authToken);
+		
+		// envía el token en la respuesta
+		res.status(200).json({ authToken: authToken });
+	} catch (err) {
+		console.error(err);
+		respond(res, 500, msgText.ERR_CHECK_SERVER_LOG);
 		return;
-	};
+	}
+});
 
-	// comprueba DB si usuario existe
-
-	// comprueba que la contraseña del usuario es correcta
-
-	// crea payload del JWT
-
-	// JWT y fírmalo
-
-	// envía el token en la respuesta
-
-}));
 export default router;
