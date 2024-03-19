@@ -2,6 +2,7 @@ import express, {Express} from 'express';
 import dotenv from 'dotenv';
 import bodyParser from "body-parser";
 import authRouter from "./routes/auth.routes";
+import userRouter from "./routes/user.routes";
 
 dotenv.config();
 const app: Express = express();
@@ -14,3 +15,4 @@ app.listen(port, () => {
 app.use(bodyParser.json());
 
 app.use("/auth", authRouter);
+app.use("/user", userRouter);
