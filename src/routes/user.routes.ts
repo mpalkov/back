@@ -22,12 +22,10 @@ router.get('/details', async (req: Request, res: Response, next: NextFunction) =
 		const foundUser = await findUser(email);
 		if (!foundUser) {
 			respond(res, 400, msgText.USER_NOT_FOUND);
-			//console.log(msgText.USER_NOT_FOUND, ' RETURN');
 			return;
 		}
 		if (foundUser && foundUser.password)
 			foundUser.password = "***"; // así no se enviará contraseña
-		//console.log('found user: ',foundUser);
 		return res.status(200).json(foundUser);
 	} catch (err) {
 		console.error(err);
@@ -73,7 +71,7 @@ router.delete('/delete', async (req: Request, res: Response, next: NextFunction)
 			respond(res, 500, msgText.ERR_CHECK_SERVER_LOG);
 			return;
 		}
-	
+
 		// borra al usuario de DB
 		const deletedUser = await db.user.delete({
 			where: { email },

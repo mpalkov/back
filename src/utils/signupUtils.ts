@@ -8,6 +8,7 @@ import { PrismaClient } from "@prisma/client";
 const db = new PrismaClient();
 const SALT_ROUNDS = 10;
 
+/** Crea un nuevo usuario */
 export async function signupUser(req: Request): Promise<User> {
 	const { email, password, name } = req?.body ?? {};
 

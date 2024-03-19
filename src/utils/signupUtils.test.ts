@@ -1,13 +1,10 @@
 import { Request } from "express";
 import { signupUser } from "./signupUtils";
 
-
-
 const newUniqueEmail = () => {
 	return `${Date.now()}@gmail.com`;
 };
 let uniqueEmail = newUniqueEmail();
-//console.log('uniqueEmail:', uniqueEmail);
 
 describe('signupUtils - test de registro de un nuevo usuario', () => {
 	test('tiene que dar error si no hay request', () => {
