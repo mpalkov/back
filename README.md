@@ -6,12 +6,15 @@ Esta API proporciona 5 endpoints para hacer operaciones CRUD sobre usuarios.
 
 ### Aspectos Destacados
 
-- **JWT (JSON Web Token)**: Se utilizan para autenticación y autorización.
+- **[JWT](https://openwebinars.net/blog/que-es-json-web-token-y-como-funciona/) (JSON Web Token)**: Se utilizan para autenticación y autorización.
 - **Seguridad**: Las contraseñas se almacenan de forma encriptada.
-- **Prisma con SQLite3**: Prisma simplifica la interacción con la base de datos.
+- **[Prisma](https://www.prisma.io/) con [SQLite3](https://www.sqlite.org/)**: Prisma simplifica la interacción con la base de datos.
 
 
 ## Instalación
+
+- Es necesario tener entorno de desarrollo habilitado al menos con [NodeJS](https://nodejs.org/en) y [npm](https://www.npmjs.com/)
+
 1. Clona este repositorio: `git clone https://github.com/mpalkov/back.git`
 2. Navega al directorio del proyecto: `cd back`
 3. Instala las dependencias: `npm install`
@@ -28,7 +31,7 @@ Esta API proporciona 5 endpoints para hacer operaciones CRUD sobre usuarios.
 | `/user/delete` | Borra el usuario de la base de datos | DELETE | Objeto JSON con email y nombre nuevo del usuario |
 
 
-## Funcionalidad CRUD
+## Funcionalidad [CRUD](https://www.freecodecamp.org/news/crud-operations-explained/)
 
 - **Crear (POST)**: Crea un nuevo usuario o elemento.
 - **Leer (GET)**: Obtiene información de usuarios o elementos existentes.
@@ -44,7 +47,7 @@ Esta API proporciona 5 endpoints para hacer operaciones CRUD sobre usuarios.
 - **jsonwebtoken**: Genera y verifica tokens JWT.
 - **sqlite3**: Base de datos SQLite3.
 
-## Pruebas Unitarias
+## Pruebas Unitarias con [Jest](https://jestjs.io/es-ES/)
 
 Para probar la lógica de negocio, ejecuta el siguiente comando:
 
