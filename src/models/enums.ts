@@ -11,5 +11,6 @@ export enum msgText {
 	ERR_CHECK_SERVER_LOG = "Ha ocurrido un error, comprueba log del servidor.",
 	ALREADY_EXISTS = "Ya existe usuario con este e-mail.",
 	USER_NOT_FOUND = "No existe usuario con este e-mail.",
-	WRONG_PASS = "La contraseña no es correcta."
+	WRONG_PASS = "La contraseña no es correcta.",
+	USR_DELETED = "Usuario borrado correctamente."
 }
