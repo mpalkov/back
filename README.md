@@ -18,7 +18,8 @@ Esta API proporciona 5 endpoints para hacer operaciones CRUD sobre usuarios.
 1. Clona este repositorio: `git clone https://github.com/mpalkov/back.git`
 2. Navega al directorio del proyecto: `cd back`
 3. Instala las dependencias: `npm install`
-4. Transpila el código TypeScript a JavaScript: `npm run build`
+4. Se requiere habilitar tu archivo .env con las siguientes variables de entorno: `DATABASE_URL`, `PORT`, `TOKEN_SECRET`
+5. Transpila el código TypeScript a JavaScript: `npm run build`
 
 ## Endpoints
 
