@@ -31,6 +31,8 @@ Esta API proporciona 5 endpoints para hacer operaciones CRUD sobre usuarios.
 | `/user/edit` | Modifica datos de usuario en la base de datos | PUT | Objeto JSON con email y nombre nuevo del usuario |
 | `/user/delete` | Borra el usuario de la base de datos | DELETE | Objeto JSON con email y nombre nuevo del usuario |
 
+- Utilizé [Postman](https://www.postman.com/) para hacer test unitarios manuales durante el desarrollo
+
 
 ## Funcionalidad [CRUD](https://www.freecodecamp.org/news/crud-operations-explained/)
 
