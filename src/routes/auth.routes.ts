@@ -5,68 +5,26 @@ import { findUser, hasAllInputData, respond } from '../utils/authUtils';
 import bcrypt from "bcryptjs";
 import { PrismaClient } from '@prisma/client';
 import jwt from "jsonwebtoken";
+import { signupUser } from '../utils/signupUtils';
 
 dotenv.config();
 const router = express.Router();
 const db = new PrismaClient();
 const SALT_ROUNDS = 10;
 
-// POST auth/signup - crea nuevo usuario en DB
+
+// POST auth/signup - create new user in DB
 router.post("/signup", async (req: Request, res: Response, next: NextFunction) => {
-	try {
-		//console.log('reqbody:', req.body);
-		const { email, password, name } = req.body;
-		
-		if (!hasAllInputData(opType.SIGNUP, email, password, name)) {
-			respond(res, 400, msgText.INCOMPLETE_DATA_SIGNUP);
-			return;
-		};
-	
-		// comprueba si el e-mail tiene formato válido
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-		if (!emailRegex.test(email)) {
-			respond(res, 400, msgText.INVALID_EMAIL_FORMAT);
-			return;
-		}
-	
-		// comprueba si la contraseña cumple requisitos para ser fuerte
-		const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
-		if (!passwordRegex.test(password)) {
-			respond(res, 400, msgText.INVALID_PASSWORD_FORMAT);
-			return;
-		}
-	
-		// comprueba si ya existe usuario con este e-mail
-		const foundUser = await findUser(email);
-		if (foundUser) {
-			respond(res, 400, msgText.ALREADY_EXISTS);
-			console.log(msgText.ALREADY_EXISTS, ' RETURN');
-			return;
-		}
-	
-		// crea hash del password
-		const salt = bcrypt.genSaltSync(SALT_ROUNDS);
-		const hashedPassword = bcrypt.hashSync(password, salt);
-	
-		// crea usuario en DB con password hasheado
-		const createdUser = await db.user.create({
-			data: {
-				name: name,
-				email: email,
-				password: hashedPassword
+	//console.log(req.body);
+	return await signupUser(req)
+		// respond with acknowledgement and some created user details (excluding password)
+		.then( (createdUser) => {
+			if (createdUser) {
+				const user = { email: createdUser?.email, name: createdUser?.name };
+				res.status(201).json({ user });
 			}
-		});
-		// si usuario ha sido creado correctamente, responde con un OK
-		// y unos datos del usuario en JSON (sin incluir la contraseña)
-		if (createdUser) {
-			const user = { email: createdUser?.email, name: createdUser?.name };
-			res.status(201).json({ user });
-		}
-	} catch (err) {
-		console.error(err);
-		respond(res, 500, msgText.ERR_CHECK_SERVER_LOG);
-		return;
-	}
+		})
+		.catch(err => res.status(err.statusCode).json({ message: err.messageText }));// In this case, we send error handling to the error handling middleware.
 });
 
 // POST  /auth/login - Comprueba email y password y crea JWT
